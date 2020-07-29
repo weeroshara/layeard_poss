@@ -119,4 +119,23 @@ public class DataLayer {
             return false;
         }
     }
+
+    public static boolean updateItem(ItemTM items){
+        try {
+//            ItemTM selectedItem = tblItems.getSelectionModel().getSelectedItem();
+            PreparedStatement pstm = DBConnection.getInstance().getConnection().prepareStatement("UPDATE Item SET description=?, unitPrice=?, qtyOnHand=? WHERE code=?");
+            pstm.setObject(1, items.getDescription());
+            pstm.setObject(2, items.getUnitPrice());
+            pstm.setObject(3, items.getQtyOnHand());
+            pstm.setObject(4, items.getCode());
+            if (pstm.executeUpdate() == 0) {
+                new Alert(Alert.AlertType.ERROR, "Failed to update the Item").show();
+                return false;
+            }
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

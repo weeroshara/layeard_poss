@@ -55,4 +55,8 @@ public class Business {
         return DataLayer.saveItem(new ItemTM(id,descrition,quntity,unitePrice));
     }
 
+    public static boolean updateItem(String id,String descreption, int quntity, BigDecimal unitPrice){
+        return DataLayer.updateItem(new ItemTM(id,descreption,quntity,unitPrice));
+    }
+
 }

@@ -169,25 +169,27 @@ public class ManageItemFormController implements Initializable {
 //                e.printStackTrace();
 //            }
 
-            Business.saveItems(txtCode.getText(),txtDescription.getText(),Integer.parseInt(txtQtyOnHand.getText()), BigDecimal.valueOf(txtUnitPrice.getTranslateY()));
+            BigDecimal untePrice = BigDecimal.valueOf(Integer.parseInt(txtUnitPrice.getText()));
+            Business.saveItems(txtCode.getText(),txtDescription.getText(),Integer.parseInt(txtQtyOnHand.getText()),untePrice);
             btnAddNew_OnAction(event);
         } else {
-            ItemTM selectedItem = tblItems.getSelectionModel().getSelectedItem();
-
-            try {
-                PreparedStatement pstm = DBConnection.getInstance().getConnection().prepareStatement("UPDATE Item SET description=?, unitPrice=?, qtyOnHand=? WHERE code=?");
-                pstm.setObject(1, txtDescription.getText());
-                pstm.setObject(2, unitPrice);
-                pstm.setObject(3, qtyOnHand);
-                pstm.setObject(4, selectedItem.getCode());
-                if (pstm.executeUpdate() == 0) {
-                    new Alert(Alert.AlertType.ERROR, "Failed to update the Item").show();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
 
 
+//            try {
+//                ItemTM selectedItem = tblItems.getSelectionModel().getSelectedItem();
+//                PreparedStatement pstm = DBConnection.getInstance().getConnection().prepareStatement("UPDATE Item SET description=?, unitPrice=?, qtyOnHand=? WHERE code=?");
+//                pstm.setObject(1, txtDescription.getText());
+//                pstm.setObject(2, unitPrice);
+//                pstm.setObject(3, qtyOnHand);
+//                pstm.setObject(4, selectedItem.getCode());
+//                if (pstm.executeUpdate() == 0) {
+//                    new Alert(Alert.AlertType.ERROR, "Failed to update the Item").show();
+//                }
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            }
+            BigDecimal untePrice = BigDecimal.valueOf(Integer.parseInt(txtUnitPrice.getText()));
+            Business.updateItem(txtCode.getText(),txtDescription.getText(),Integer.parseInt(txtQtyOnHand.getText()),untePrice);
             tblItems.refresh();
             btnAddNew_OnAction(event);
         }
