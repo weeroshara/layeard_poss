@@ -5,10 +5,12 @@
  */
 package controller;
 
+import business.Business;
 import com.jfoenix.controls.JFXTextField;
 import db.DBConnection;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -27,11 +29,13 @@ import javafx.stage.Stage;
 import util.ItemTM;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -101,21 +105,25 @@ public class ManageItemFormController implements Initializable {
     }
 
     private void loadAllItems() {
-        try {
-            Statement stm = DBConnection.getInstance().getConnection().createStatement();
-            ResultSet rst = stm.executeQuery("SELECT * FROM Item");
-            ObservableList<ItemTM> items = tblItems.getItems();
-            items.clear();
-            while (rst.next()) {
-                String code = rst.getString(1);
-                String description = rst.getString(2);
-                double unitPrice = rst.getDouble(3);
-                int qtyOnHand = rst.getInt(4);
-                items.add(new ItemTM(code, description, qtyOnHand, unitPrice));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Statement stm = DBConnection.getInstance().getConnection().createStatement();
+//            ResultSet rst = stm.executeQuery("SELECT * FROM Item");
+//            ObservableList<ItemTM> items = tblItems.getItems();
+//            items.clear();
+//            while (rst.next()) {
+//                String code = rst.getString(1);
+//                String description = rst.getString(2);
+//                double unitPrice = rst.getDouble(3);
+//                int qtyOnHand = rst.getInt(4);
+//                items.add(new ItemTM(code, description, qtyOnHand, unitPrice));
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+
+        List<ItemTM> items = Business.getItems();
+        ObservableList<ItemTM> itemTMS = FXCollections.observableArrayList(items);
+        tblItems.setItems(itemTMS);
     }
 
     @FXML
@@ -148,19 +156,20 @@ public class ManageItemFormController implements Initializable {
 
         if (btnSave.getText().equals("Save")) {
 
-            try {
-                PreparedStatement pstm = DBConnection.getInstance().getConnection().prepareStatement("INSERT INTO Item VALUES (?,?,?,?)");
-                pstm.setObject(1, txtCode.getText());
-                pstm.setObject(2, txtDescription.getText());
-                pstm.setObject(3, qtyOnHand);
-                pstm.setObject(4, unitPrice);
-                if (pstm.executeUpdate() == 0) {
-                    new Alert(Alert.AlertType.ERROR, "Failed to save the item", ButtonType.OK).show();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                PreparedStatement pstm = DBConnection.getInstance().getConnection().prepareStatement("INSERT INTO Item VALUES (?,?,?,?)");
+//                pstm.setObject(1, txtCode.getText());
+//                pstm.setObject(2, txtDescription.getText());
+//                pstm.setObject(3, qtyOnHand);
+//                pstm.setObject(4, unitPrice);
+//                if (pstm.executeUpdate() == 0) {
+//                    new Alert(Alert.AlertType.ERROR, "Failed to save the item", ButtonType.OK).show();
+//                }
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            }
 
+            Business.saveItems(txtCode.getText(),txtDescription.getText(),Integer.parseInt(txtQtyOnHand.getText()), BigDecimal.valueOf(txtUnitPrice.getTranslateY()));
             btnAddNew_OnAction(event);
         } else {
             ItemTM selectedItem = tblItems.getSelectionModel().getSelectedItem();

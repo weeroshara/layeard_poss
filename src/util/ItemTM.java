@@ -1,16 +1,18 @@
 package util;
 
+import java.math.BigDecimal;
+
 public class ItemTM implements Cloneable{
 
     private String code;
     private String description;
     private int qtyOnHand;
-    private double unitPrice;
+    private BigDecimal unitPrice;
 
     public ItemTM() {
     }
 
-    public ItemTM(String code, String description, int qtyOnHand, double unitPrice) {
+    public ItemTM(String code, String description, int qtyOnHand, BigDecimal unitPrice) {
         this.code = code;
         this.description = description;
         this.qtyOnHand = qtyOnHand;
@@ -45,11 +47,11 @@ public class ItemTM implements Cloneable{
         this.qtyOnHand = qtyOnHand;
     }
 
-    public double getUnitPrice() {
+    public BigDecimal getUnitPrice() {
         return unitPrice;
     }
 
-    public void setUnitPrice(double unitPrice) {
+    public void setUnitPrice(BigDecimal unitPrice) {
         this.unitPrice = unitPrice;
     }
 

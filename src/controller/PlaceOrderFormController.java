@@ -22,6 +22,7 @@ import javafx.stage.Stage;
 import util.*;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -156,7 +157,7 @@ public class PlaceOrderFormController {
             while (rst.next()) {
                 String code = rst.getString(1);
                 String description = rst.getString(2);
-                double unitPrice = rst.getDouble(3);
+                BigDecimal unitPrice = BigDecimal.valueOf(rst.getDouble(3));
                 int qtyOnHand = rst.getInt(4);
                 items.add(new ItemTM(code, description, qtyOnHand, unitPrice));
             }
@@ -228,7 +229,7 @@ public class PlaceOrderFormController {
                 OrderDetailTM orderDetail = new OrderDetailTM(selectedItem.getCode(),
                         selectedItem.getDescription(),
                         qty,
-                        selectedItem.getUnitPrice(), qty * selectedItem.getUnitPrice(), btnDelete);
+                        selectedItem.getUnitPrice().byteValueExact(), qty * selectedItem.getUnitPrice().byteValueExact(), btnDelete);
                 btnDelete.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
