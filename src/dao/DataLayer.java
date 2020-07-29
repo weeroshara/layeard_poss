@@ -7,9 +7,11 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableView;
 import util.CustomerTM;
 import util.ItemTM;
+import util.OrderTM;
 
 import java.math.BigDecimal;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -170,6 +172,26 @@ public class DataLayer {
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    ///////********************* place order
+
+    public static boolean insertOrder(OrderTM order){
+        try {
+            PreparedStatement pstm = DBConnection.getInstance().getConnection().prepareStatement("INSERT INTO `Order` VALUES (?,?,?)");
+            pstm.setObject(1, order.getOrderId());
+            pstm.setObject(2, order.getOrderDate());
+            pstm.setObject(3, order.getCustomerId());
+            int affectedRows = pstm.executeUpdate();
+            if (affectedRows == 0) {
+                new Alert(Alert.AlertType.ERROR, "Mudalali wade awul wage", ButtonType.OK).show();
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }
