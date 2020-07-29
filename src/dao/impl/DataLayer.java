@@ -128,7 +128,7 @@ public class DataLayer {
                 items.add(new ItemTM(rst.getString(1),
                         rst.getString(2),
                         rst.getInt(4),
-                        rst.getDouble(3)));
+                        rst.getBigDecimal(3)));
             }
             return items;
         } catch (SQLException throwables) {

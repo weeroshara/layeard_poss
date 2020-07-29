@@ -1,7 +1,16 @@
 package business;
 
 import dao.DataLayer;
+import dao.ItemDAO;
+import dao.OrderDAO;
+import dao.OrderDetailDAO;
+import dao.impl.ItemDAOimpl;
+import dao.impl.OrderDAOimpl;
+import dao.impl.OrderDetailDAOimpl;
 import db.DBConnection;
+import entity.Item;
+import entity.Order;
+import entity.OrderDetail;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableView;
 import util.CustomerTM;
@@ -10,6 +19,9 @@ import util.OrderDetailTM;
 import util.OrderTM;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.SQLException;
 import java.util.List;
 
 public class Business {
@@ -93,6 +105,56 @@ public class Business {
 
     /////////******************* Place Order
 
+    public static boolean placeOrder(OrderTM order, List<OrderDetailTM> orderDetails) {
+        OrderDAO orderDAO=new OrderDAOimpl();
+        Connection connection = DBConnection.getInstance().getConnection();
+        try {
+            connection.setAutoCommit(false);
+            boolean result = orderDAO.saveOrder(new Order(order.getOrderId(),
+                    Date.valueOf(order.getOrderDate()),
+                    order.getCustomerId()));
+            if (!result) {
+                connection.rollback();
+                return false;
+            }
+            for (OrderDetailTM orderDetail : orderDetails) {
+                OrderDetailDAO orderDetail1=new OrderDetailDAOimpl();
+                ItemDAO itemDAO=new ItemDAOimpl();
+
+                result = orderDetail1.saveOrderDetail(new OrderDetail(
+                        order.getOrderId(), orderDetail.getCode(),
+                        orderDetail.getQty(), BigDecimal.valueOf(orderDetail.getUnitPrice())
+                ));
+                if (!result){
+                    connection.rollback();
+                    return false;
+                }
+                Item item = itemDAO.findItem(orderDetail.getCode());
+                item.setQtyOnHand(item.getQtyOnHand() - orderDetail.getQty());
+                result = itemDAO.updateItem(item);
+                if (!result){
+                    connection.rollback();
+                    return false;
+                }
+            }
+            connection.commit();
+            return true;
+        } catch (Throwable throwables) {
+            throwables.printStackTrace();
+            try {
+                connection.rollback();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return false;
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        }
+    }
 
 
 }
