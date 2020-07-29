@@ -4,6 +4,7 @@ import db.DBConnection;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.TableView;
 import util.CustomerTM;
 import util.ItemTM;
 
@@ -136,6 +137,39 @@ public class DataLayer {
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    public static boolean deletItem(TableView.TableViewSelectionModel<ItemTM> selectionModel,ObservableList<ItemTM> items,String code){
+        try {
+            ItemTM selectedItem = selectionModel.getSelectedItem();
+            PreparedStatement pstm = DBConnection.getInstance().getConnection().prepareStatement("DELETE FROM Item WHERE code=?");
+            pstm.setObject(1, code);
+            if (pstm.executeUpdate() == 0) {
+                new Alert(Alert.AlertType.ERROR, "Failed to delete the item", ButtonType.OK).show();
+                return false;
+            } else {
+                items.remove(selectedItem);
+                selectionModel.clearSelection();
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static String loadItemId(){
+        try {
+            Statement stm = DBConnection.getInstance().getConnection().createStatement();
+            ResultSet rst = stm.executeQuery("SELECT code FROM Item ORDER BY code DESC LIMIT 1");
+            if (rst.next()) {
+                return rst.getString(1);
+            }
+            return null;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }

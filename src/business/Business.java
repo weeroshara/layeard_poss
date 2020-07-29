@@ -1,6 +1,8 @@
 package business;
 
 import dao.DataLayer;
+import javafx.collections.ObservableList;
+import javafx.scene.control.TableView;
 import util.CustomerTM;
 import util.ItemTM;
 
@@ -31,7 +33,7 @@ public class Business {
         if (lastId==null){
             return "C001";
         }else {
-            int maxId = Integer.parseInt(lastId.replace("C00", ""));
+            int maxId = Integer.parseInt(lastId.replace("C", ""));
             maxId = maxId + 1;
             String id = "";
             if (maxId < 10) {
@@ -58,5 +60,34 @@ public class Business {
     public static boolean updateItem(String id,String descreption, int quntity, BigDecimal unitPrice){
         return DataLayer.updateItem(new ItemTM(id,descreption,quntity,unitPrice));
     }
+
+    public static boolean deletItem(TableView.TableViewSelectionModel<ItemTM> selectionModel, ObservableList<ItemTM> items, String code){
+        return DataLayer.deletItem(selectionModel,items,code);
+    }
+
+    public static String itemIdGenerate(){
+
+        String s = DataLayer.loadItemId();
+
+        if (s==null){
+            return "I001";
+        }
+        else {
+            int maxCode = Integer.parseInt(s.replace("I", ""));
+            maxCode =maxCode + 1;
+            String code = "";
+            if (maxCode < 10) {
+                code = "I00" + maxCode;
+            } else if (maxCode < 100) {
+                code = "I0" + maxCode;
+            } else {
+                code = "I" + maxCode;
+            }
+            return code;
+        }
+
+    }
+
+    /////////*******************
 
 }

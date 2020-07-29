@@ -204,18 +204,22 @@ public class ManageItemFormController implements Initializable {
         Optional<ButtonType> buttonType = alert.showAndWait();
         if (buttonType.get() == ButtonType.YES) {
             ItemTM selectedItem = tblItems.getSelectionModel().getSelectedItem();
-            try {
-                PreparedStatement pstm = DBConnection.getInstance().getConnection().prepareStatement("DELETE FROM Item WHERE code=?");
-                pstm.setObject(1, selectedItem.getCode());
-                if (pstm.executeUpdate() == 0) {
-                    new Alert(Alert.AlertType.ERROR, "Failed to delete the item", ButtonType.OK).show();
-                } else {
-                    tblItems.getItems().remove(selectedItem);
-                    tblItems.getSelectionModel().clearSelection();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                PreparedStatement pstm = DBConnection.getInstance().getConnection().prepareStatement("DELETE FROM Item WHERE code=?");
+//                pstm.setObject(1, selectedItem.getCode());
+//                if (pstm.executeUpdate() == 0) {
+//                    new Alert(Alert.AlertType.ERROR, "Failed to delete the item", ButtonType.OK).show();
+//                } else {
+//                    tblItems.getItems().remove(selectedItem);
+//                    tblItems.getSelectionModel().clearSelection();
+//                }
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            }
+
+            TableView.TableViewSelectionModel<ItemTM> selectionModel = tblItems.getSelectionModel();
+            ObservableList<ItemTM> items = tblItems.getItems();
+            Business.deletItem(selectionModel,items,txtCode.getText());
         }
     }
 
@@ -233,26 +237,29 @@ public class ManageItemFormController implements Initializable {
         btnSave.setDisable(false);
 
         // Generate a new id
-        int maxCode = 0;
-        try {
-            Statement stm = DBConnection.getInstance().getConnection().createStatement();
-            ResultSet rst = stm.executeQuery("SELECT code FROM Item ORDER BY code DESC LIMIT 1");
-            if (rst.next()) {
-                maxCode = Integer.parseInt(rst.getString(1).replace("I", ""));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        maxCode = maxCode + 1;
-        String code = "";
-        if (maxCode < 10) {
-            code = "I00" + maxCode;
-        } else if (maxCode < 100) {
-            code = "I0" + maxCode;
-        } else {
-            code = "I" + maxCode;
-        }
-        txtCode.setText(code);
+//        int maxCode = 0;
+//        try {
+//            Statement stm = DBConnection.getInstance().getConnection().createStatement();
+//            ResultSet rst = stm.executeQuery("SELECT code FROM Item ORDER BY code DESC LIMIT 1");
+//            if (rst.next()) {
+//                maxCode = Integer.parseInt(rst.getString(1).replace("I", ""));
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//
+//        String code = "";
+//        if (maxCode < 10) {
+//            code = "I00" + maxCode;
+//        } else if (maxCode < 100) {
+//            code = "I0" + maxCode;
+//        } else {
+//            code = "I" + maxCode;
+//        }
+//        txtCode.setText(code);
+
+        txtCode.setText(Business.itemIdGenerate());
+    //    System.out.println(Business.itemIdGenerate());
 
     }
 
