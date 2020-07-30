@@ -8,4 +8,6 @@ public interface QueryDAO extends SuperDAO {
     CustomEntity getOrdrerDetal(String id);
 
     CustomEntity getOrderDetil2(String id);
+
+    CustomEntity getOrderDetail3(String id);
 }

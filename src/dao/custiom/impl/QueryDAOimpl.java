@@ -50,5 +50,25 @@ public class QueryDAOimpl implements QueryDAO {
     }
 
 
+    @Override
+    public CustomEntity getOrderDetail3(String id) {
+        try {
+            Connection connection = DBConnection.getInstance().getConnection();
+            PreparedStatement pstm = connection.prepareStatement("select o.id, o.date, c.id, c.name, sum(od.qty*od.unitPrice) as total from `Order` o inner join Customer c on c.id=o.customerId inner join OrderDetail od on od.orderId=o.id where orderId=?;");
+            pstm.setObject(1,id);
+            ResultSet rst = pstm.executeQuery();
+            if (rst.next()){
+                return new CustomEntity(rst.getString(1),
+                        rst.getString(2),
+                        rst.getString(3));
+            }
+            return null;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return null;
+        }
+    }
+
+
     ///// all join query in there
 }
