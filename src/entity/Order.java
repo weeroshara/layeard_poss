@@ -1,9 +1,8 @@
 package entity;
 
-import java.io.Serializable;
 import java.sql.Date;
 
-public class Order implements Serializable {
+public class Order implements SupperEntity {
 
     private String id;
     private Date date;

@@ -1,8 +1,6 @@
 package entity;
 
-import java.io.Serializable;
-
-public class Customer implements Serializable {
+public class Customer implements SupperEntity {
     private String id;
     private String name;
     private String address;

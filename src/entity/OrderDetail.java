@@ -1,9 +1,8 @@
 package entity;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class OrderDetail implements Serializable {
+public class OrderDetail implements SupperEntity {
 
     private OrderDetailPK orderDetailPK;
     private int qty;

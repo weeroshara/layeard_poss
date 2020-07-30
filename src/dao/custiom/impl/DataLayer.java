@@ -6,6 +6,7 @@ import util.ItemTM;
 import util.OrderDetailTM;
 import util.OrderTM;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -128,7 +129,7 @@ public class DataLayer {
                 items.add(new ItemTM(rst.getString(1),
                         rst.getString(2),
                         rst.getInt(4),
-                        rst.getDouble(3)));
+                        BigDecimal.valueOf(rst.getDouble(3))));
             }
             return items;
         } catch (SQLException throwables) {
