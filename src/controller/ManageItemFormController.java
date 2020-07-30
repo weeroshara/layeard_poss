@@ -5,9 +5,8 @@
  */
 package controller;
 
-import business.Business;
+import business.BusinessLogic;
 import com.jfoenix.controls.JFXTextField;
-import db.DBConnection;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -29,13 +28,7 @@ import javafx.stage.Stage;
 import util.ItemTM;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.net.URL;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -105,25 +98,11 @@ public class ManageItemFormController implements Initializable {
     }
 
     private void loadAllItems() {
-//        try {
-//            Statement stm = DBConnection.getInstance().getConnection().createStatement();
-//            ResultSet rst = stm.executeQuery("SELECT * FROM Item");
-//            ObservableList<ItemTM> items = tblItems.getItems();
-//            items.clear();
-//            while (rst.next()) {
-//                String code = rst.getString(1);
-//                String description = rst.getString(2);
-//                double unitPrice = rst.getDouble(3);
-//                int qtyOnHand = rst.getInt(4);
-//                items.add(new ItemTM(code, description, qtyOnHand, unitPrice));
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
 
-        List<ItemTM> items = Business.getItems();
-        ObservableList<ItemTM> itemTMS = FXCollections.observableArrayList(items);
-        tblItems.setItems(itemTMS);
+        ObservableList<ItemTM> items = tblItems.getItems();
+        items.clear();
+        items = FXCollections.observableArrayList(BusinessLogic.getAllItems());
+        tblItems.setItems(items);
     }
 
     @FXML
@@ -156,40 +135,18 @@ public class ManageItemFormController implements Initializable {
 
         if (btnSave.getText().equals("Save")) {
 
-//            try {
-//                PreparedStatement pstm = DBConnection.getInstance().getConnection().prepareStatement("INSERT INTO Item VALUES (?,?,?,?)");
-//                pstm.setObject(1, txtCode.getText());
-//                pstm.setObject(2, txtDescription.getText());
-//                pstm.setObject(3, qtyOnHand);
-//                pstm.setObject(4, unitPrice);
-//                if (pstm.executeUpdate() == 0) {
-//                    new Alert(Alert.AlertType.ERROR, "Failed to save the item", ButtonType.OK).show();
-//                }
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }
-
-            BigDecimal untePrice = BigDecimal.valueOf(Integer.parseInt(txtUnitPrice.getText()));
-            Business.saveItems(txtCode.getText(),txtDescription.getText(),Integer.parseInt(txtQtyOnHand.getText()),untePrice);
+            boolean result = BusinessLogic.saveItem(txtCode.getText(), txtDescription.getText(), qtyOnHand, unitPrice);
+            if (!result){
+                new Alert(Alert.AlertType.ERROR, "Failed to save the item", ButtonType.OK).show();
+            }
             btnAddNew_OnAction(event);
         } else {
+            ItemTM selectedItem = tblItems.getSelectionModel().getSelectedItem();
 
-
-//            try {
-//                ItemTM selectedItem = tblItems.getSelectionModel().getSelectedItem();
-//                PreparedStatement pstm = DBConnection.getInstance().getConnection().prepareStatement("UPDATE Item SET description=?, unitPrice=?, qtyOnHand=? WHERE code=?");
-//                pstm.setObject(1, txtDescription.getText());
-//                pstm.setObject(2, unitPrice);
-//                pstm.setObject(3, qtyOnHand);
-//                pstm.setObject(4, selectedItem.getCode());
-//                if (pstm.executeUpdate() == 0) {
-//                    new Alert(Alert.AlertType.ERROR, "Failed to update the Item").show();
-//                }
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }
-            BigDecimal untePrice = BigDecimal.valueOf(Integer.parseInt(txtUnitPrice.getText()));
-            Business.updateItem(txtCode.getText(),txtDescription.getText(),Integer.parseInt(txtQtyOnHand.getText()),untePrice);
+            boolean result = BusinessLogic.updateItem(txtDescription.getText(),  qtyOnHand, unitPrice, selectedItem.getCode());
+            if (!result) {
+                new Alert(Alert.AlertType.ERROR, "Failed to update the Item").show();
+            }
             tblItems.refresh();
             btnAddNew_OnAction(event);
         }
@@ -204,22 +161,13 @@ public class ManageItemFormController implements Initializable {
         Optional<ButtonType> buttonType = alert.showAndWait();
         if (buttonType.get() == ButtonType.YES) {
             ItemTM selectedItem = tblItems.getSelectionModel().getSelectedItem();
-//            try {
-//                PreparedStatement pstm = DBConnection.getInstance().getConnection().prepareStatement("DELETE FROM Item WHERE code=?");
-//                pstm.setObject(1, selectedItem.getCode());
-//                if (pstm.executeUpdate() == 0) {
-//                    new Alert(Alert.AlertType.ERROR, "Failed to delete the item", ButtonType.OK).show();
-//                } else {
-//                    tblItems.getItems().remove(selectedItem);
-//                    tblItems.getSelectionModel().clearSelection();
-//                }
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }
-
-            TableView.TableViewSelectionModel<ItemTM> selectionModel = tblItems.getSelectionModel();
-            ObservableList<ItemTM> items = tblItems.getItems();
-            Business.deletItem(selectionModel,items,txtCode.getText());
+            boolean result = BusinessLogic.deleteItem(selectedItem.getCode());
+            if (!result){
+                new Alert(Alert.AlertType.ERROR, "Failed to delete the item", ButtonType.OK).show();
+            }else{
+                tblItems.getItems().remove(selectedItem);
+                tblItems.getSelectionModel().clearSelection();
+            }
         }
     }
 
@@ -237,29 +185,7 @@ public class ManageItemFormController implements Initializable {
         btnSave.setDisable(false);
 
         // Generate a new id
-//        int maxCode = 0;
-//        try {
-//            Statement stm = DBConnection.getInstance().getConnection().createStatement();
-//            ResultSet rst = stm.executeQuery("SELECT code FROM Item ORDER BY code DESC LIMIT 1");
-//            if (rst.next()) {
-//                maxCode = Integer.parseInt(rst.getString(1).replace("I", ""));
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//
-//        String code = "";
-//        if (maxCode < 10) {
-//            code = "I00" + maxCode;
-//        } else if (maxCode < 100) {
-//            code = "I0" + maxCode;
-//        } else {
-//            code = "I" + maxCode;
-//        }
-//        txtCode.setText(code);
-
-        txtCode.setText(Business.itemIdGenerate());
-    //    System.out.println(Business.itemIdGenerate());
+        txtCode.setText(BusinessLogic.getNewItemCode());
 
     }
 

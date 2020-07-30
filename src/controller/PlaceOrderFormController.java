@@ -1,10 +1,9 @@
 package controller;
 
-import business.Business;
+import business.BusinessLogic;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
-import db.DBConnection;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -24,16 +23,10 @@ import javafx.stage.Stage;
 import util.*;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.net.URL;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 
 public class PlaceOrderFormController {
     static ArrayList<Order> ordersDB = new ArrayList<>();
@@ -154,12 +147,12 @@ public class PlaceOrderFormController {
 
     private void loadAllItems() {
         cmbItemCode.getItems().clear();
-        cmbItemCode.setItems(FXCollections.observableArrayList(Business.getItems()));
+        cmbItemCode.setItems(FXCollections.observableArrayList(BusinessLogic.getAllItems()));
     }
 
     private void loadAllCustomers() {
         cmbCustomerId.getItems().clear();
-        cmbCustomerId.setItems(FXCollections.observableArrayList(Business.getCustomers()));
+        cmbCustomerId.setItems(FXCollections.observableArrayList(BusinessLogic.getAllCustomers()));
     }
 
     private void calculateQtyOnHand(ItemTM item) {
@@ -259,7 +252,7 @@ public class PlaceOrderFormController {
             return;
         }
 
-        boolean result = Business.placeOrder(new OrderTM(lblId.getText(), LocalDate.now(), cmbCustomerId.getValue().getId(), cmbCustomerId.getValue().getName(),0),tblOrderDetails.getItems());
+        boolean result = BusinessLogic.placeOrder(new OrderTM(lblId.getText(), LocalDate.now(), cmbCustomerId.getValue().getId(), cmbCustomerId.getValue().getName(),0),tblOrderDetails.getItems());
         if (!result){
             new Alert(Alert.AlertType.ERROR, "Mudalali wade awul wage", ButtonType.OK).show();
             return;
@@ -304,7 +297,7 @@ public class PlaceOrderFormController {
 
     private void generateOrderId() {
         // Generate a new id
-        lblId.setText(Business.itemIdGenerate());
+        lblId.setText(BusinessLogic.getNewOrderId());
     }
 
     void initializeWithSearchOrderForm(String orderId) {
@@ -351,4 +344,5 @@ public class PlaceOrderFormController {
             }
         }
     }
+
 }

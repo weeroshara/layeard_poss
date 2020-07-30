@@ -1,4 +1,4 @@
-package dao.impl;
+package dao.custiom.impl;
 
 import db.DBConnection;
 import util.CustomerTM;
@@ -128,7 +128,7 @@ public class DataLayer {
                 items.add(new ItemTM(rst.getString(1),
                         rst.getString(2),
                         rst.getInt(4),
-                        rst.getBigDecimal(3)));
+                        rst.getDouble(3)));
             }
             return items;
         } catch (SQLException throwables) {
